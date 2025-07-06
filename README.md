@@ -157,8 +157,8 @@ POST /process/start
 Content-Type: application/json
 
 {
-  "folderPath": "/path/to/text/files",
-  "batchSize": 10
+  "folder_path": "/path/to/text/files",
+  "batch_size": 10
 }
 ```
 
@@ -184,6 +184,34 @@ POST /process/stop/{process_id}
 }
 ```
 
+### Pause Processing
+```http
+POST /process/pause/{process_id}
+```
+
+**Response:**
+```json
+{
+  "process_id": "uuid-string",
+  "status": "PAUSED",
+  "message": "Process paused"
+}
+```
+
+### Resume Processing
+```http
+POST /process/resume/{process_id}
+```
+
+**Response:**
+```json
+{
+  "process_id": "uuid-string",
+  "status": "RUNNING",
+  "message": "Process resumed"
+}
+```
+
 ### Get Process Status
 ```http
 GET /process/status/{process_id}
@@ -193,11 +221,19 @@ GET /process/status/{process_id}
 ```json
 {
   "process_id": "uuid-string",
-  "state": "RUNNING",
-  "progress": 45.5,
-  "start_time": "2024-01-01T10:00:00Z",
-  "end_time": null,
-  "error_detail": null
+  "status": "RUNNING",
+  "progress": {
+    "total_files": 15,
+    "processed_files": 7,
+    "percentage": 46.67
+  },
+  "started_at": "2024-01-01T10:00:00Z",
+  "results": {
+    "total_words": 12500,
+    "total_lines": 850,
+    "most_frequent_words": ["the", "and", "to", "of", "a"],
+    "files_processed": ["file1.txt", "file2.txt", "file3.txt"]
+  }
 }
 ```
 
@@ -212,10 +248,19 @@ GET /process/list
   "processes": [
     {
       "process_id": "uuid-string",
-      "state": "COMPLETED",
-      "progress": 100.0,
-      "start_time": "2024-01-01T10:00:00Z",
-      "end_time": "2024-01-01T10:05:00Z"
+      "status": "COMPLETED",
+      "progress": {
+        "total_files": 15,
+        "processed_files": 15,
+        "percentage": 100.0
+      },
+      "started_at": "2024-01-01T10:00:00Z",
+      "results": {
+        "total_words": 285740,
+        "total_lines": 47875,
+        "most_frequent_words": ["shake", "i", "gonna", "off", "it"],
+        "files_processed": ["file1.txt", "file2.txt", "file3.txt"]
+      }
     }
   ]
 }
@@ -263,7 +308,7 @@ GET /health
 ## Process States
 - **PENDING**: Process created, waiting to start
 - **RUNNING**: Currently processing files
-- **PAUSED**: Temporarily paused (not implemented)
+- **PAUSED**: Temporarily paused (can be resumed)
 - **COMPLETED**: Successfully finished processing
 - **FAILED**: Encountered an error during processing
 - **STOPPED**: Manually stopped by user
