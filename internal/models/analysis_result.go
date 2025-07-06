@@ -1,5 +1,6 @@
 package models
 
+// FileAnalysisResult represents the analysis result for a single file
 type FileAnalysisResult struct {
 	FileName      string         `json:"file_name"`
 	WordCount     int            `json:"word_count"`
@@ -9,6 +10,7 @@ type FileAnalysisResult struct {
 	Summary       string         `json:"summary"`
 }
 
+// AnalysisResult represents the complete analysis result for a process
 type AnalysisResult struct {
 	ProcessID string               `json:"process_id"`
 	Results   []FileAnalysisResult `json:"results"`

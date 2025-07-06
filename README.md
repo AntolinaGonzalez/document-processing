@@ -223,16 +223,17 @@ GET /process/status/{process_id}
   "process_id": "uuid-string",
   "status": "RUNNING",
   "progress": {
-    "total_files": 15,
-    "processed_files": 7,
-    "percentage": 46.67
+    "total_files": 10,
+    "processed_files": 3,
+    "percentage": 30
   },
-  "started_at": "2024-01-01T10:00:00Z",
+  "started_at": "2024-01-15T10:30:00Z",
+  "estimated_completion": "2024-01-15T10:32:00Z",
   "results": {
-    "total_words": 12500,
-    "total_lines": 850,
-    "most_frequent_words": ["the", "and", "to", "of", "a"],
-    "files_processed": ["file1.txt", "file2.txt", "file3.txt"]
+    "total_words": 1500,
+    "total_lines": 75,
+    "most_frequent_words": ["the", "of", "and"],
+    "files_processed": ["doc1.txt", "doc2.txt", "doc3.txt"]
   }
 }
 ```
@@ -250,16 +251,17 @@ GET /process/list
       "process_id": "uuid-string",
       "status": "COMPLETED",
       "progress": {
-        "total_files": 15,
-        "processed_files": 15,
+        "total_files": 10,
+        "processed_files": 10,
         "percentage": 100.0
       },
-      "started_at": "2024-01-01T10:00:00Z",
+      "started_at": "2024-01-15T10:30:00Z",
+      "estimated_completion": "2024-01-15T10:32:00Z",
       "results": {
-        "total_words": 285740,
-        "total_lines": 47875,
-        "most_frequent_words": ["shake", "i", "gonna", "off", "it"],
-        "files_processed": ["file1.txt", "file2.txt", "file3.txt"]
+        "total_words": 1500,
+        "total_lines": 75,
+        "most_frequent_words": ["the", "of", "and"],
+        "files_processed": ["doc1.txt", "doc2.txt", "doc3.txt"]
       }
     }
   ]
@@ -275,20 +277,20 @@ GET /process/results/{process_id}
 ```json
 {
   "process_id": "uuid-string",
-  "results": [
-    {
-      "file_name": "document.txt",
-      "word_count": 1500,
-      "line_count": 75,
-      "char_count": 8500,
-      "frequent_words": {
-        "the": 45,
-        "and": 32,
-        "to": 28
-      },
-      "summary": "This document discusses..."
-    }
-  ]
+  "status": "COMPLETED",
+  "progress": {
+    "total_files": 10,
+    "processed_files": 10,
+    "percentage": 100
+  },
+  "started_at": "2024-01-15T10:30:00Z",
+  "estimated_completion": "2024-01-15T10:32:00Z",
+  "results": {
+    "total_words": 1500,
+    "total_lines": 75,
+    "most_frequent_words": ["the", "of", "and"],
+    "files_processed": ["doc1.txt", "doc2.txt", "doc3.txt"]
+  }
 }
 ```
 

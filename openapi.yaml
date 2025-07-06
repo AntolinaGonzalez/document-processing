@@ -150,28 +150,55 @@ paths:
                 properties:
                   process_id:
                     type: string
-                  state:
+                  status:
                     type: string
+                    enum: [PENDING, RUNNING, PAUSED, COMPLETED, FAILED, STOPPED]
                   progress:
-                    type: number
-                    format: float
-                  start_time:
+                    type: object
+                    properties:
+                      total_files:
+                        type: integer
+                      processed_files:
+                        type: integer
+                      percentage:
+                        type: number
+                        format: float
+                  started_at:
                     type: string
                     format: date-time
-                  end_time:
+                  estimated_completion:
                     type: string
                     format: date-time
                     nullable: true
-                  error_detail:
-                    type: string
-                    nullable: true
+                  results:
+                    type: object
+                    properties:
+                      total_words:
+                        type: integer
+                      total_lines:
+                        type: integer
+                      most_frequent_words:
+                        type: array
+                        items:
+                          type: string
+                      files_processed:
+                        type: array
+                        items:
+                          type: string
               example:
                 process_id: "uuid-string"
-                state: "RUNNING"
-                progress: 45.5
-                start_time: "2024-01-01T10:00:00Z"
-                end_time: null
-                error_detail: null
+                status: "RUNNING"
+                progress:
+                  total_files: 10
+                  processed_files: 3
+                  percentage: 30
+                started_at: "2024-01-15T10:30:00Z"
+                estimated_completion: "2024-01-15T10:32:00Z"
+                results:
+                  total_words: 1500
+                  total_lines: 75
+                  most_frequent_words: ["the", "of", "and"]
+                  files_processed: ["doc1.txt", "doc2.txt", "doc3.txt"]
         '400':
           $ref: '#/components/responses/ErrorResponse'
   /process/list:
@@ -192,24 +219,54 @@ paths:
                       properties:
                         process_id:
                           type: string
-                        state:
+                        status:
                           type: string
                         progress:
-                          type: number
-                        start_time:
+                          type: object
+                          properties:
+                            total_files:
+                              type: integer
+                            processed_files:
+                              type: integer
+                            percentage:
+                              type: number
+                        started_at:
                           type: string
                           format: date-time
-                        end_time:
+                        estimated_completion:
                           type: string
                           format: date-time
                           nullable: true
+                        results:
+                          type: object
+                          properties:
+                            total_words:
+                              type: integer
+                            total_lines:
+                              type: integer
+                            most_frequent_words:
+                              type: array
+                              items:
+                                type: string
+                            files_processed:
+                              type: array
+                              items:
+                                type: string
               example:
                 processes:
                   - process_id: "uuid-string"
-                    state: "COMPLETED"
-                    progress: 100.0
-                    start_time: "2024-01-01T10:00:00Z"
-                    end_time: "2024-01-01T10:05:00Z"
+                    status: "COMPLETED"
+                    progress:
+                      total_files: 10
+                      processed_files: 10
+                      percentage: 100.0
+                    started_at: "2024-01-15T10:30:00Z"
+                    estimated_completion: "2024-01-15T10:32:00Z"
+                    results:
+                      total_words: 1500
+                      total_lines: 75
+                      most_frequent_words: ["the", "of", "and"]
+                      files_processed: ["doc1.txt", "doc2.txt", "doc3.txt"]
         '400':
           $ref: '#/components/responses/ErrorResponse'
   /process/results/{process_id}:
@@ -231,37 +288,55 @@ paths:
                 properties:
                   process_id:
                     type: string
+                  status:
+                    type: string
+                    enum: [PENDING, RUNNING, PAUSED, COMPLETED, FAILED, STOPPED]
+                  progress:
+                    type: object
+                    properties:
+                      total_files:
+                        type: integer
+                      processed_files:
+                        type: integer
+                      percentage:
+                        type: number
+                        format: float
+                  started_at:
+                    type: string
+                    format: date-time
+                  estimated_completion:
+                    type: string
+                    format: date-time
+                    nullable: true
                   results:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        file_name:
+                    type: object
+                    properties:
+                      total_words:
+                        type: integer
+                      total_lines:
+                        type: integer
+                      most_frequent_words:
+                        type: array
+                        items:
                           type: string
-                        word_count:
-                          type: integer
-                        line_count:
-                          type: integer
-                        char_count:
-                          type: integer
-                        frequent_words:
-                          type: object
-                          additionalProperties:
-                            type: integer
-                        summary:
+                      files_processed:
+                        type: array
+                        items:
                           type: string
               example:
                 process_id: "uuid-string"
+                status: "COMPLETED"
+                progress:
+                  total_files: 10
+                  processed_files: 10
+                  percentage: 100
+                started_at: "2024-01-15T10:30:00Z"
+                estimated_completion: "2024-01-15T10:32:00Z"
                 results:
-                  - file_name: "document.txt"
-                    word_count: 1500
-                    line_count: 75
-                    char_count: 8500
-                    frequent_words:
-                      the: 45
-                      and: 32
-                      to: 28
-                    summary: "This document discusses..."
+                  total_words: 1500
+                  total_lines: 75
+                  most_frequent_words: ["the", "of", "and"]
+                  files_processed: ["doc1.txt", "doc2.txt", "doc3.txt"]
         '400':
           $ref: '#/components/responses/ErrorResponse'
   /health:

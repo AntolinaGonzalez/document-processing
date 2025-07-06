@@ -264,13 +264,52 @@ func (h *APIHandler) GetProcessResultsHandler(c *gin.Context) {
 	logger := logs.GetLogger().With(zap.String("process_id", pid))
 	logger.Debug("Received get process results request")
 	
-	results, err := h.PM.GetProcessResults(pid)
+	// Get process status first
+	proc, err := h.PM.GetProcessStatus(pid)
 	if err != nil {
-		logger.Error("Failed to get process results", zap.Error(err))
+		logger.Error("Failed to get process status", zap.Error(err))
+		c.JSON(http.StatusNotFound, models.ErrorResponse{Error: "process not found", Details: err.Error()})
+		return
+	}
+	
+	// Calculate progress info
+	progress := models.ProgressInfo{
+		TotalFiles:     proc.TotalFiles,
+		ProcessedFiles: proc.ProcessedFiles,
+		Percentage:     int(proc.Progress),
+	}
+	
+	// Calculate estimated completion time
+	var estimatedCompletion *time.Time
+	if proc.State == models.StateRunning && proc.ProcessedFiles > 0 && proc.TotalFiles > 0 {
+		elapsed := time.Since(proc.StartTime)
+		avgTimePerFile := elapsed / time.Duration(proc.ProcessedFiles)
+		remainingFiles := proc.TotalFiles - proc.ProcessedFiles
+		estimatedTime := time.Now().Add(avgTimePerFile * time.Duration(remainingFiles))
+		estimatedCompletion = &estimatedTime
+	}
+	
+	// Get results summary
+	resultsSummary, err := h.PM.GetProcessResultsSummary(pid)
+	if err != nil {
+		logger.Error("Failed to get results summary", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "failed to get results", Details: err.Error()})
 		return
 	}
 	
-	logger.Debug("Returning process results", zap.Int("result_count", len(results)))
-	c.JSON(http.StatusOK, gin.H{"process_id": pid, "results": results})
+	// Build response with aggregated results
+	resp := models.ProcessStatusResponse{
+		ProcessID:           proc.ProcessID,
+		Status:              string(proc.State),
+		Progress:            progress,
+		StartedAt:           proc.StartTime,
+		EstimatedCompletion: estimatedCompletion,
+		Results:             resultsSummary,
+	}
+	
+	logger.Debug("Returning process results summary", 
+		zap.String("status", resp.Status),
+		zap.Int("percentage", resp.Progress.Percentage))
+	
+	c.JSON(http.StatusOK, resp)
 }

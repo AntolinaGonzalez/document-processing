@@ -22,7 +22,7 @@ services:
 
   # Document Processing System
   app:
-    build: .
+    image: document-processor:latest
     container_name: document-processor-app
     ports:
       - "8080:8080"

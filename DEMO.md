@@ -53,11 +53,20 @@ You should see:
 ```json
 {
   "process_id":"550e8400-e29b-41d4-a716-446655440000",
-  "state":"RUNNING",
-  "progress":50.0,
-  "start_time":"2024-01-01T10:00:00Z",
-  "end_time":null,
-  "error_detail":null
+  "status":"RUNNING",
+  "progress":{
+    "total_files":15,
+    "processed_files":7,
+    "percentage":46.67
+  },
+  "started_at":"2024-01-15T10:30:00Z",
+  "estimated_completion":"2024-01-15T10:32:00Z",
+  "results":{
+    "total_words":12500,
+    "total_lines":850,
+    "most_frequent_words":["the","and","to","of","a"],
+    "files_processed":["file1.txt","file2.txt","file3.txt"]
+  }
 }
 ```
 
@@ -65,16 +74,20 @@ You should see:
 ```json
 {
   "process_id":"550e8400-e29b-41d4-a716-446655440000",
-  "results":[
-    {
-      "file_name":"sample.txt",
-      "word_count":150,
-      "line_count":18,
-      "char_count":850,
-      "frequent_words":{"the":12,"system":8,"processing":6},
-      "summary":"This document discusses the implementation of a document processing system."
-    }
-  ]
+  "status":"COMPLETED",
+  "progress":{
+    "total_files":15,
+    "processed_files":15,
+    "percentage":100
+  },
+  "started_at":"2024-01-15T10:30:00Z",
+  "estimated_completion":"2024-01-15T10:32:00Z",
+  "results":{
+    "total_words":285740,
+    "total_lines":47875,
+    "most_frequent_words":["shake","i","off","it","gonna"],
+    "files_processed":["large-sample.txt","another-sample.txt","sample.txt","massive_document_backup.txt","sample1.txt","sample2.txt","ts1.txt","ts2.txt","ts3.txt","ts4.txt","ts5.txt","ts6.txt","ts7.txt","ts8.txt","massive_document.txt"]
+  }
 }
 ```
 
@@ -118,7 +131,14 @@ The demo processes these files from `test-data/`:
 The system will analyze each file and extract:
 - Word count, line count, character count
 - Most frequent words (top 5)
-- Content summary (first 2 sentences) 
+- Content summary (first 2 sentences)
+
+**Enhanced Features:**
+- 📊 Real-time progress tracking with percentage
+- ⏰ Estimated completion time calculation
+- 📈 Aggregated results summary across all files
+- 📝 Most frequent words across all processed files
+- 📁 List of all processed files 
 
 3️⃣  Monitoring process status with enhanced progress tracking...
    Check 1:

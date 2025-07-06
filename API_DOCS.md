@@ -76,17 +76,7 @@ interface ResultsSummary {
 }
 ```
 
-### File Analysis Result
-```typescript
-interface FileAnalysisResult {
-  file_name: string;
-  word_count: number;
-  line_count: number;
-  char_count: number;
-  frequent_words: Record<string, number>;
-  summary: string;
-}
-```
+
 
 ## Endpoints
 
@@ -530,11 +520,11 @@ curl -X GET http://localhost:8080/process/list
 
 ### Get Analysis Results
 
-Get the detailed analysis results for a completed document processing job.
+Get the aggregated analysis results for a completed document processing job.
 
 **Endpoint:** `GET /process/results/{process_id}`
 
-**Description:** Returns detailed analysis results for each file processed in the job.
+**Description:** Returns aggregated analysis results and process status information.
 
 **Path Parameters:**
 | Parameter | Type | Required | Description |
@@ -547,18 +537,20 @@ Get the detailed analysis results for a completed document processing job.
 ```json
 {
   "process_id": "string",
-  "results": [
-    {
-      "file_name": "string",
-      "word_count": "integer",
-      "line_count": "integer",
-      "char_count": "integer",
-      "frequent_words": {
-        "word": "integer"
-      },
-      "summary": "string"
-    }
-  ]
+  "status": "string",
+  "progress": {
+    "total_files": "integer",
+    "processed_files": "integer",
+    "percentage": "number"
+  },
+  "started_at": "string",
+  "estimated_completion": "string",
+  "results": {
+    "total_words": "integer",
+    "total_lines": "integer",
+    "most_frequent_words": ["string"],
+    "files_processed": ["string"]
+  }
 }
 ```
 
@@ -566,13 +558,16 @@ Get the detailed analysis results for a completed document processing job.
 | Field | Type | Description |
 |-------|------|-------------|
 | `process_id` | string | Unique identifier for the processing job |
-| `results` | array | Array of file analysis results |
-| `results[].file_name` | string | Name of the processed file |
-| `results[].word_count` | integer | Total number of words in the file |
-| `results[].line_count` | integer | Total number of lines in the file |
-| `results[].char_count` | integer | Total number of characters in the file |
-| `results[].frequent_words` | object | Top 5 most frequent words with their counts |
-| `results[].summary` | string | Generated summary (first 2 sentences) |
+| `status` | string | Current status of the process |
+| `progress.total_files` | integer | Total number of files to process |
+| `progress.processed_files` | integer | Number of files already processed |
+| `progress.percentage` | number | Completion percentage (0-100) |
+| `started_at` | string | ISO 8601 timestamp when processing started |
+| `estimated_completion` | string | ISO 8601 timestamp of estimated completion (nullable) |
+| `results.total_words` | integer | Total word count across all files |
+| `results.total_lines` | integer | Total line count across all files |
+| `results.most_frequent_words` | array | Top 5 most frequent words across all files |
+| `results.files_processed` | array | List of all processed file names |
 
 **Example:**
 ```bash
@@ -583,36 +578,20 @@ curl -X GET http://localhost:8080/process/results/5ffce937-a5ce-4e37-a65f-4d42ca
 ```json
 {
   "process_id": "5ffce937-a5ce-4e37-a65f-4d42ca28a69b",
-  "results": [
-    {
-      "file_name": "sample1.txt",
-      "word_count": 140,
-      "line_count": 13,
-      "char_count": 927,
-      "frequent_words": {
-        "-": 6,
-        "and": 6,
-        "processing": 7,
-        "system": 4,
-        "the": 7
-      },
-      "summary": "The quick brown fox jumps over the lazy dog. This is a sample text file that will be processed by our document processing system."
-    },
-    {
-      "file_name": "sample2.txt",
-      "word_count": 125,
-      "line_count": 12,
-      "char_count": 820,
-      "frequent_words": {
-        "-": 5,
-        "files": 4,
-        "in": 3,
-        "multiple": 3,
-        "ut": 3
-      },
-      "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    }
-  ]
+  "status": "COMPLETED",
+  "progress": {
+    "total_files": 15,
+    "processed_files": 15,
+    "percentage": 100
+  },
+  "started_at": "2024-01-15T10:30:00Z",
+  "estimated_completion": "2024-01-15T10:32:00Z",
+  "results": {
+    "total_words": 285740,
+    "total_lines": 47875,
+    "most_frequent_words": ["shake", "i", "off", "it", "gonna"],
+    "files_processed": ["large-sample.txt", "another-sample.txt", "sample.txt", "massive_document_backup.txt", "sample1.txt", "sample2.txt", "ts1.txt", "ts2.txt", "ts3.txt", "ts4.txt", "ts5.txt", "ts6.txt", "ts7.txt", "ts8.txt", "massive_document.txt"]
+  }
 }
 ```
 
