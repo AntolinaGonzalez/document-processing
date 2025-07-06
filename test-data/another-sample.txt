@@ -1,0 +1,15 @@
+Concurrent Processing in Go
+
+Go provides excellent support for concurrent programming through goroutines and channels. This document discusses the key concepts and patterns used in the document processing system.
+
+Goroutines are lightweight threads managed by the Go runtime. They allow us to run functions concurrently without the overhead of operating system threads. The worker pool pattern uses multiple goroutines to process tasks in parallel.
+
+Channels are the primary mechanism for communication between goroutines. They provide a safe way to share data and coordinate work. In our system, channels are used to distribute file batches to workers and collect results.
+
+The select statement allows goroutines to wait on multiple channel operations. This is useful for implementing timeouts and cancellation. Our system uses context cancellation to gracefully stop processing when requested.
+
+Error handling in concurrent programs requires careful consideration. Errors must be propagated correctly through channels and handled appropriately. The system includes comprehensive error handling with structured logging.
+
+Performance optimization involves tuning the number of workers and batch sizes. Too many workers can overwhelm the system, while too few may not utilize available resources effectively. The system allows configuration of these parameters.
+
+Memory management is important for processing large files. The system uses buffered I/O to process files efficiently without loading entire files into memory. This approach scales well to handle large document collections. 

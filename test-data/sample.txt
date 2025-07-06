@@ -1,0 +1,18 @@
+The Document Processing System
+
+This is a sample text file for testing the document processing system. The system is designed to analyze text files and extract various statistics including word count, line count, character count, and frequent words.
+
+The system processes files asynchronously using GoRoutines and channels for efficient concurrent processing. It supports batch processing to handle large numbers of files efficiently.
+
+Key features include:
+- Asynchronous processing with progress tracking
+- REST API for process control and monitoring
+- Persistent storage of results in PostgreSQL
+- Structured logging with Zap
+- Graceful shutdown and error handling
+
+The architecture follows GoLang best practices with clear separation of concerns between API handlers, process management, worker pools, and data persistence layers.
+
+This sample file contains multiple sentences to test the summary generation functionality. The system should be able to extract the most frequent words and generate a meaningful summary of the content.
+
+Testing is an important aspect of software development. The system includes comprehensive unit tests and integration tests to ensure reliability and correctness. 

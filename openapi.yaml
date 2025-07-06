@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: Document Processing System API
+  version: 1.0.0
+  description: |
+    Asynchronous document processing system with REST API for batch text analysis, progress tracking, and process control (pause/resume/stop).
+servers:
+  - url: http://localhost:8080
+paths:
+  /process/start:
+    post:
+      summary: Start a new document processing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folder_path:
+                  type: string
+                  example: /data
+                batch_size:
+                  type: integer
+                  example: 1
+              required:
+                - folder_path
+                - batch_size
+      responses:
+        '200':
+          description: Process started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [PENDING, RUNNING, PAUSED, COMPLETED, FAILED, STOPPED]
+              example:
+                process_id: "uuid-string"
+                status: "PENDING"
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/stop/{process_id}:
+    post:
+      summary: Stop a running process
+      parameters:
+        - in: path
+          name: process_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Process stopped
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  status:
+                    type: string
+                  message:
+                    type: string
+              example:
+                process_id: "uuid-string"
+                status: "STOPPED"
+                message: "Process stopped"
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/pause/{process_id}:
+    post:
+      summary: Pause a running process
+      parameters:
+        - in: path
+          name: process_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Process paused
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  status:
+                    type: string
+                  message:
+                    type: string
+              example:
+                process_id: "uuid-string"
+                status: "PAUSED"
+                message: "Process paused"
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/resume/{process_id}:
+    post:
+      summary: Resume a paused process
+      parameters:
+        - in: path
+          name: process_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Process resumed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  status:
+                    type: string
+                  message:
+                    type: string
+              example:
+                process_id: "uuid-string"
+                status: "RUNNING"
+                message: "Process resumed"
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/status/{process_id}:
+    get:
+      summary: Get the status of a process
+      parameters:
+        - in: path
+          name: process_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Process status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  state:
+                    type: string
+                  progress:
+                    type: number
+                    format: float
+                  start_time:
+                    type: string
+                    format: date-time
+                  end_time:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  error_detail:
+                    type: string
+                    nullable: true
+              example:
+                process_id: "uuid-string"
+                state: "RUNNING"
+                progress: 45.5
+                start_time: "2024-01-01T10:00:00Z"
+                end_time: null
+                error_detail: null
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/list:
+    get:
+      summary: List all processes
+      responses:
+        '200':
+          description: List of processes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  processes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        process_id:
+                          type: string
+                        state:
+                          type: string
+                        progress:
+                          type: number
+                        start_time:
+                          type: string
+                          format: date-time
+                        end_time:
+                          type: string
+                          format: date-time
+                          nullable: true
+              example:
+                processes:
+                  - process_id: "uuid-string"
+                    state: "COMPLETED"
+                    progress: 100.0
+                    start_time: "2024-01-01T10:00:00Z"
+                    end_time: "2024-01-01T10:05:00Z"
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /process/results/{process_id}:
+    get:
+      summary: Get analysis results for a process
+      parameters:
+        - in: path
+          name: process_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  process_id:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        file_name:
+                          type: string
+                        word_count:
+                          type: integer
+                        line_count:
+                          type: integer
+                        char_count:
+                          type: integer
+                        frequent_words:
+                          type: object
+                          additionalProperties:
+                            type: integer
+                        summary:
+                          type: string
+              example:
+                process_id: "uuid-string"
+                results:
+                  - file_name: "document.txt"
+                    word_count: 1500
+                    line_count: 75
+                    char_count: 8500
+                    frequent_words:
+                      the: 45
+                      and: 32
+                      to: 28
+                    summary: "This document discusses..."
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service health
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: integer
+              example:
+                status: ok
+                timestamp: 1704110400
+components:
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              details:
+                type: string
+          example:
+            error: "Error description"
+            details: "Additional error details" 

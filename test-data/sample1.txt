@@ -1,0 +1,13 @@
+The quick brown fox jumps over the lazy dog. This is a sample text file that will be processed by our document processing system. The system will analyze this text and extract various statistics including word count, line count, character count, and identify the most frequent words.
+
+This document contains multiple paragraphs to test the processing capabilities. Each paragraph should be counted separately, and the system should be able to handle various types of text content including punctuation, numbers, and special characters.
+
+The document processing system is designed to handle large volumes of text files efficiently using concurrent processing with GoRoutines. It provides a REST API for starting, monitoring, and retrieving results from processing jobs.
+
+Key features include:
+- Asynchronous processing
+- Progress tracking
+- Persistent storage
+- REST API interface
+- Concurrent file processing
+- Error handling and recovery 
